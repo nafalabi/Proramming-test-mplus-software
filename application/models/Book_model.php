@@ -46,20 +46,27 @@
 
 		public function create(){
 			//Escaping params
-			$id = $this->db->escape($id);
-			$title = $this->db->escape($title);
-			$author_id = $this->db->escape($author_id);
-			$date_published = $this->db->escape($date_published);
-			$number_of_pages = $this->db->escape($number_of_pages);
-			$type_id = $this->db->escape($type_id);
+			$title = $this->db->escape($this->title);
+			$author_id = $this->db->escape($this->author_id);
+			$number_of_pages = $this->db->escape($this->number_of_pages);
+			$type_id = $this->db->escape($this->type_id);
+
+			//Check for Duplicated Title
+			$checkname = $this->db->query('Select * From '.$this->table.' Where title='.$title);
+			if ($checkname->num_rows() > 0) {
+				return array(
+					'error' => true,
+					'errorMsg' => 'Duplicated Title Name'
+				);
+			}
 
 			//Define the query
 			$query = $this->db->query(
-				'INSERT INTO '.$table.' (`title`,`author_id`,`date_published`,`number_of_pages`,`type_id)
+				'INSERT INTO '.$this->table.' (`title`,`author_id`,`date_published`,`number_of_pages`,`type_id`)
 				VALUES 
 				('.$title.',
 				'.$author_id.',
-				'.$date_published.',
+				CURRENT_TIMESTAMP,
 				'.$number_of_pages.',
 				'.$type_id.')'
 			);
