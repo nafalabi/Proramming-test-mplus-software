@@ -12,6 +12,8 @@ composer.lock
 
 ci_sessions
 
+.phpintel
+
 user_guide_src/build/*
 user_guide_src/cilexer/build/*
 user_guide_src/cilexer/dist/*

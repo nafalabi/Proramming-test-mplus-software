@@ -10,6 +10,7 @@ class Book extends CI_Controller{
 		$this->load->helper('form');
 		$this->load->library('session');
 		$this->load->library('form_validation');
+		$this->load->database();
 	}
 
 	public function index(){
@@ -27,6 +28,7 @@ class Book extends CI_Controller{
 				//Data Extract and validation
 				extract($booklist[$i]);
 				$temp = array(
+					'id' => $id,
 					'title' => $title, 
 					'author' => $author, 
 					'date_published' => date('d M Y',strtotime($date_published)), 
@@ -79,7 +81,7 @@ class Book extends CI_Controller{
 		}
 		//Statement If the Form is submitted and pass all of the validation
 		else{
-			//Asssigning the submitted data into new variables
+			//Asssigning Posts data into new (reserved) variables
 			$title=$this->input->post('title');
 			$author=$this->input->post('author');
 			$newAuthor=$this->input->post('newAuthor');
@@ -90,27 +92,33 @@ class Book extends CI_Controller{
 			$author_id = $author;
 			$type_id = $type;
 
-
+			//Statement if new author inserted
 			if ($author=='new') {
+				//create new author object
 				$authorObj = new $this->AModel;
 				$authorObj->name = $newAuthor;
 				$result = $authorObj->create();
+				//if there is an error
 				if ($result['error']) {
 					$this->session->set_flashdata('warning',$result['errorMsg']);
 					redirect(base_url().'index.php/book/create','refresh');
 				}else {
+					//Assign new ID of author to reserved variable
 					$author = $authorObj->author_id;
 				}
 			}
-
+			//Statement if new type of book inserted
 			if ($type=='new') {
+				//create new type of book object
 				$typeObj = new $this->TModel;
 				$typeObj->name = $newType;
 				$result = $typeObj->create();
+				//if there is an error
 				if ($result['error']) {
 					$this->session->set_flashdata('warning',$result['errorMsg']);
 					redirect(base_url().'index.php/book/create','refresh');
 				}else {
+					//Assign new ID of type to reserved variable
 					$type = $typeObj->type_id;
 				}
 			}
@@ -124,19 +132,133 @@ class Book extends CI_Controller{
 			$Book->type_id = $type;
 			//Run the create procedure and retrive the error message
 			$result=$Book->create();
-
+			//if there is an error while creating
 			if($result['error']){
 				$this->session->set_flashdata('warning',$result['errorMsg']);
 			}
 			else {
 				$this->session->set_flashdata('success', 'Book Created');
 			}
-
+			//refresh the page
 			redirect(base_url().'index.php/book/create','refresh');
 		}
 	}
 
-	public function test(){
-		
+	public function edit($id=null){
+		//if ID is NOT defined
+		if($id==null){
+			$this->index();
+		//if ID is defined
+		}else{
+
+			//Set Form Validation Rules
+			$this->form_validation->set_rules('title', 'Title', 'trim|required|min_length[5]|max_length[100]');
+			$this->form_validation->set_rules('author', 'Author', 'trim|required');
+			$this->form_validation->set_rules('pages', 'Number of Page', 'trim|required|integer');
+			$this->form_validation->set_rules('type', 'Type of Book', 'trim|required');
+
+			//Statement if the Form Validation is not running yet Or there is an error
+			if($this->form_validation->run() == FALSE){
+				//Init Data
+				$data['title'] = 'Edit Data';
+				$data['page'] = 'edit';
+				$data['result'] = array();
+				$data['author'] = array();
+				$data['types'] = array();
+
+				if(!intval($id)){
+					$this->session->set_flashdata('warning','Edit error,  book ID is not valid.');
+					redirect(base_url().'index.php/book/');
+				}
+
+				$Book = new $this->BModel;
+				$result = $Book->findOne($id);
+				if($result ==  false){
+					$this->session->set_flashdata('warning','Edit error,  book not found.');
+					redirect(base_url().'index.php/book/');
+				}else {
+					$data['result']=$result;
+				}
+
+				$Models=$this->AModel->read();
+				$Types=$this->TModel->read();
+				//Check if there are authors in the db
+				if($Models!=false){
+					$data['authors'] = $Models;
+				}
+				//Check if there are types in the db
+				if ($Types!=false) {
+					$data['types'] = $Types;
+				}
+
+				$data['main'] = $this->load->view('templates/edit',$data,true);
+				$this->load->view('templates/main',$data);
+			}
+			//Statement If the Form is submitted and pass all of the validation
+			else{
+				//Asssigning Posts data into new (reserved) variables
+				$id = $this->input->post('id');
+				$title=$this->input->post('title');
+				$author=$this->input->post('author');
+				$newAuthor=$this->input->post('newAuthor');
+				$pages=$this->input->post('pages');
+				$type=$this->input->post('type');
+				$newType=$this->input->post('newType');
+				$author_id = $author;
+				$type_id = $type;
+
+				//Statement if new author inserted
+				if ($author=='new') {
+					//create new author object
+					$authorObj = new $this->AModel;
+					$authorObj->name = $newAuthor;
+					$result = $authorObj->create();
+					//if there is an error
+					if ($result['error']) {
+						$this->session->set_flashdata('warning',$result['errorMsg']);
+						redirect(base_url().'index.php/book/','refresh');
+					}else {
+						//Assign new ID of author to reserved variable
+						$author = $authorObj->author_id;
+					}
+				}
+				//Statement if new type of book inserted
+				if ($type=='new') {
+					//create new type of book object
+					$typeObj = new $this->TModel;
+					$typeObj->name = $newType;
+					$result = $typeObj->create();
+					//if there is an error
+					if ($result['error']) {
+						$this->session->set_flashdata('warning',$result['errorMsg']);
+						redirect(base_url().'index.php/book/','refresh');
+					}else {
+						//Assign new ID of type to reserved variable
+						$type = $typeObj->type_id;
+					}
+				}
+
+				//Assigning the data from new variables to new Book object
+				$Book = new $this->BModel;
+				$Book->id = $id;
+				$Book->title = $title;
+				$Book->author_id = $author;
+				$Book->number_of_pages = $pages;
+				$Book->type_id = $type;
+				//Run the create procedure and retrive the error message
+				$result=$Book->update();
+				//if there is an error while creating
+				if($result['error']){
+					$this->session->set_flashdata('warning',$result['errorMsg']);
+				}
+				else {
+					$this->session->set_flashdata('success', 'Book Edited');
+				}
+				//refresh the page
+				redirect(base_url().'index.php/book/','refresh');
+
+				// echo json_encode($this->input->post());
+			}
+		}
 	}
 }

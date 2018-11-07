@@ -28,19 +28,6 @@
 						Create New Book
 					</a>
 				</li>
-				<li class="nav-item 
-				<?php if($page=='edit') {echo 'active';}?>">
-					<a class="nav-link" 
-					href="<?php echo base_url().'index.php/book/edit'?>">
-						Edit Existing Book
-					</a>
-				</li>
-				<li class="nav-item 
-				<?php if($page=='delete') {echo 'active';}?>">
-					<a class="nav-link" 
-					href="<?php echo base_url().'index.php/book/delete'?>">
-						Delete Existing Book</a>
-				</li>
 			</ul>
 		</div>
 	</nav>
