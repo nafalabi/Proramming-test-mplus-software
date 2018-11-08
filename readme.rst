@@ -2,8 +2,8 @@
 Programming Test
 ###################
 
-This is a project from Mplus Software Programming Test.
-This project is build with:
+This project if for Mplus Software Programming Test.
+This project was build with:
 
 -  PHP as the main programming language
 -  CodeIgniter as PHP Framework
