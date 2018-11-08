@@ -140,7 +140,7 @@ class Book extends CI_Controller{
 				$this->session->set_flashdata('success', 'Book Created');
 			}
 			//refresh the page
-			redirect(base_url().'index.php/book/create','refresh');
+			redirect(base_url().'index.php/book/');
 		}
 	}
 
@@ -256,8 +256,77 @@ class Book extends CI_Controller{
 				}
 				//refresh the page
 				redirect(base_url().'index.php/book/','refresh');
+			}
+		}
+	}
 
-				// echo json_encode($this->input->post());
+	public function delete($id=null){
+		//IF the ID is null OR not defined in the url
+		if($id==null){
+			$this->index();
+		}
+		//IF the ID is Defined in the url
+		else{
+			//Set Form Validation Rules
+			$this->form_validation->set_rules('id', 'ID', 'trim|required|integer');
+			$this->form_validation->set_rules('confirm', 'Confirmation', 'trim|required');
+			//Statement if the Form Validation is not running yet Or there is an error
+			if($this->form_validation->run() == FALSE){
+				//Init Data
+				$data['title'] = 'Delete Data';
+				$data['page'] = 'delete';
+				$data['result'] = array();
+				//Check if the ID is integer
+				if(!intval($id)){
+					$this->session->set_flashdata('warning','Edit error,  book ID is not valid.');
+					redirect(base_url().'index.php/book/');
+				}
+				//Check if the book is exist in the db
+				$Book = new $this->BModel;
+				$result = $Book->findOne($id);
+				if($result == false){
+					$this->session->set_flashdata('warning','Edit error,  book not found.');
+					redirect(base_url().'index.php/book/');
+				}else {
+					$data['result']=$result;
+				}
+
+				$data['main']=$this->load->view('templates/delete',$data,true);
+				$this->load->view('templates/main',$data);
+			}
+			//Statement If the Form is submitted and pass all of the validation
+			else{
+				$id = $this->input->post('id');
+				$confirm = $this->input->post('confirm');
+
+				if(is_string($confirm)){
+					if($confirm!='CONFIRM'){
+						$this->session->set_flashdata('warning','Confirmation word is not valid');
+						redirect(base_url().'index.php/book/delete/'.$id);
+					}
+				}
+				if(!is_numeric($id)){
+					$this->session->set_flashdata('warning','Book ID is not valid');
+					redirect(base_url().'index.php/book/delete/'.$id);
+				}
+
+				//Check if the book is exist in the db
+				$Book = new $this->BModel;
+				$findResult = $Book->findOne($id);
+				if($findResult == false){
+					$this->session->set_flashdata('warning','Delete error,  book not found.');
+					redirect(base_url().'index.php/book/');
+				}
+
+				$delResult = $this->BModel->delete($findResult['id']);
+				if($delResult['error'] == true){
+					$this->session->set_flashdata('warning',$delResult['errorMsg']);
+					redirect(base_url().'index.php/book/');
+				}else{
+					$this->session->set_flashdata('success', 'Book Deleted');
+				}
+				//refresh the page
+				redirect(base_url().'index.php/book/');
 			}
 		}
 	}

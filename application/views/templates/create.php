@@ -1,6 +1,11 @@
 <main id="create home" class="mt-5">
 	<div class="wrapper container">
 
+		<div class="heading">
+			<h1>Create Data</h1>
+			<hr>
+		</div>
+
 		<?php if(validation_errors()): ?>
 		<div class="alert alert-warning">
 			<?php echo validation_errors();?>
@@ -69,6 +74,7 @@
 
 			<div class="form-group">
 				<input class="btn btn-block btn-primary" type="submit" value="Create"></input>
+				<a class="btn btn-danger btn-block" href="<?php echo base_url()?>">Cancel</a>
 			</div>
 		<?php echo form_close()?>
 	</div>

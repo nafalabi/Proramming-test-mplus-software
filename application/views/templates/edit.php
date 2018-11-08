@@ -83,6 +83,7 @@
 
 			<div class="form-group">
 				<input class="btn btn-block btn-primary" type="submit" value="Edit"></input>
+				<a class="btn btn-danger btn-block" href="<?php echo base_url()?>">Cancel</a>
 			</div>
 		<?php echo form_close()?>
 	</div>

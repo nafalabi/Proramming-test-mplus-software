@@ -171,5 +171,23 @@
 				return false;
 			}
 		}
+
+		public function delete($id){
+			$id=$this->db->escape($id);
+			$query = $this->db->query('DELETE FROM '.$this->table.' WHERE `id` ='.$id);
+
+			if(!$query){
+				return array(
+					'error' => true,
+					'errorMsg' => $this->db->error()
+				);
+			}
+			else {
+				return array(
+					'error' => false,
+					'errorMsg' => null
+				);
+			}
+		}
 	}
 ?>

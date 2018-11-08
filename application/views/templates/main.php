@@ -47,7 +47,7 @@
 		var typeVisibility = false;
 
 		//Event for 
-		dropdownAuthor.addEventListener('click',function() {
+		dropdownAuthor.addEventListener('change',function() {
 			if (dropdownAuthor.value=='new') {
 				newAuthor.removeAttribute('hidden');
 				authorVisibility = true;
@@ -58,7 +58,7 @@
 			}
 		});
 
-		dropdownType.addEventListener('click',function() {
+		dropdownType.addEventListener('change',function() {
 			if (dropdownType.value=='new') {
 				newType.removeAttribute('hidden');
 				authorVisibility = true;

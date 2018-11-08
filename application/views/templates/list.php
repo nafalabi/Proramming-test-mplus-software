@@ -1,6 +1,10 @@
 	<main id="list home" class="mt-5">
-
 		<div class="wrapper container">
+
+		<div class="heading">
+			<h1>List Data</h1>
+			<hr>
+		</div>
 
 		<?php if($this->session->flashdata('warning')): ?>
 		<div class="alert alert-warning">
