@@ -23,7 +23,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://myproject/books/';
+$protocol = stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https://' : 'http://';
+$config['base_url'] = $protocol.$_SERVER['SERVER_NAME'].'/books/';
 
 /*
 |--------------------------------------------------------------------------
